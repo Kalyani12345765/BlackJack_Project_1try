@@ -1,58 +1,90 @@
 import random
 cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
 
-Play= input("Do you want to play a game of Blackjack? Type 'y' or 'n': ")
+Play= input("Do you want to play a game of Blackjack? Type 'y' or 'n': ").lower()
 if Play=="y":
     #user_choice
     user_choice1= random.choice(cards) #using random module--> use choice function ie. random.choice()
-    user_list=[user_choice1] #list-->later to add second choice and further choice of user_cards
+    user_choice2= random.choice(cards)
+    user_list=[user_choice1, user_choice2] #list-->later to add second choice and further choice of user_cards
+    first_total_user=0
 
     #computer_choice/ dealer
     computer_choice1= random.choice(cards)
     computer_choice2= random.choice(cards)
-    first_total_comp=computer_choice1+ computer_choice2
     comp_list= [computer_choice1, computer_choice2]
+    first_total_comp = sum(comp_list)
 
 
     looping= True
     while looping:
-        user_choice2= random.choice(cards)
-        user_list.append(user_choice2) #adding the items into list (works on original list)
-        print(user_list)
-        first_total_user= user_choice1+user_choice2
+
+        first_total_user= sum(user_list)
+
+        #if finding 11 (Ace)--> changing to 1 if cross over 21
+        if first_total_user> 21 and 11 in user_list:
+            user_list[user_list.index(11)]= 1
+            first_total_user= sum(user_list)
+        elif first_total_user==21 and len(user_list)==2: #having 11(Ace) and 10 = 21
+            if first_total_comp==21 and len(comp_list)==2:
+                print(f"It's draw! Your list:{user_list} and your current score: {first_total_user}")
+                print(f"Dealer list: {comp_list} and computer score: {first_total_comp}")
+            else:
+                print(f"You won! yay!Instant BlackJack! Your list: {user_list} and your current score: {first_total_user}")
+            looping= False
+            
 
         print(f"Your cards:{user_list}, current score: {first_total_user}")
         print(f"Computer's first card: {computer_choice1}")
 
-        user_input=input("Type 'y' to get another card, type 'n' to pass: ")
+        user_input=input("Type 'y' to get another card, type 'n' to pass: ").lower()
         if user_input=="y":
-            user_choice1=first_total_user
+            user_newcard= random.choice(cards)
+            user_list.append(user_newcard) #adding new card to the list
+            first_total_user= sum(user_list) #new sum
+            if first_total_user>21 and 11 in user_list:
+                user_list[user_list.index(11)]=1
+                first_total_user=sum(user_list)
+            elif first_total_user>21:
+                print(f"Your final hand: {user_list}, final score: {first_total_user}")
+                print(f"Computer's final hand: {comp_list}, final score: {first_total_comp}")
+                print("You lose!You went over! Busted")
+                looping = False  # play is over, because user is Busted, went over the 21.
 
         elif user_input=="n":
+            first_total_user=sum(user_list)
+
+            #if dealer(comp) draws until 17 or higher
+            while first_total_comp<17:
+                comp_list.append(random.choice(cards))
+                first_total_comp= sum(comp_list)
+
+                #if the dealer(comp) has ace
+                if first_total_comp>21 and 11 in comp_list:
+                    comp_list[comp_list.index(11)]=1
+                    first_total_comp= sum(comp_list)
+
             print(f"Your final hand: {user_list}, final score: {first_total_user}")
             print(f"Computer's final hand: {comp_list}, final score: {first_total_comp}")
 
-            if first_total_user<=21 and first_total_user>first_total_comp:
-                print("You win!")
-            elif first_total_user < first_total_comp:
-                print("You lose!")
-            elif first_total_user == first_total_comp:
-                print("Draw!")
-            looping= False #now the play is over.
+            if first_total_user>21:
+                print("You went over. You lose!")
+            elif first_total_comp>21:
+                print("Dealer went over 21. You won!")
+            elif first_total_user>first_total_comp:
+                print("You won!yayyyy!")
+            elif first_total_user<first_total_comp:
+                print("You lose!Noooooo!")
+            else:
+                print("Draw!Oh shoot miss the chance aye!")
+            looping= False
 
-        if first_total_user > 21:
-            print(f"Your final hand: {user_list}, final score: {first_total_user}")
-            print(f"Computer's final hand: {comp_list}, final score: {first_total_comp}")
-            print("You lose!You went over! Busted")
-            looping= False #play is over, because user is Busted, went over the 21.
-
-        # elif first_total_user < first_total_comp:
-        #     print("You lose!")
-        # elif first_total_user == first_total_comp:
-        #     print("Draw!")
+        else:
+            print("Please, type either 'y' for continue or 'n' for stand")
 
 else:
     print("Have a nice day!")
+
 
 
 
